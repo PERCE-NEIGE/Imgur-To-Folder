@@ -7,11 +7,7 @@ Download Imgur albums and images to desired folder with one command.
 
 ### Example
 
-<figure class="video_container">
-  <video controls="true" allowfullscreen="true">
-    <source src="https://raw.githubusercontent.com/santosderek/Imgur-To-Folder/santosderek/imgurtofolder/images/example.mp4" type="video/mp4">
-  </video>
-</figure>
+![Example Gif](imgurtofolder/images/example.mp4)
 
 ---
 
