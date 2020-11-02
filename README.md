@@ -1,4 +1,4 @@
-![Dyrenex Software](imgurtofolder/Dyrenex_Software.png)
+![Dyrenex Software](imgurtofolder/images/Dyrenex_Software.png)
 
 # Imgur-To-Folder
 Download Imgur albums and images to desired folder with one command.
@@ -9,7 +9,7 @@ Download Imgur albums and images to desired folder with one command.
 
 <figure class="video_container">
   <video controls="true" allowfullscreen="true">
-    <source src="imgurtofolder/images/example.webm" type="video/webm">
+    <source src="https://raw.githubusercontent.com/santosderek/Imgur-To-Folder/santosderek/imgurtofolder/images/example.mp4" type="video/mp4">
   </video>
 </figure>
 
