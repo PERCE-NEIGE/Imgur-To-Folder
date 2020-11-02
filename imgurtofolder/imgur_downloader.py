@@ -21,31 +21,29 @@ class Imgur_Downloader(Imgur):
         invalid_characters = ['\\', "'", '/', ':',
                               '*', '?', '"', '<',
                               '>', '|', '.', '\n']
-
         for character in invalid_characters:
             word = word.replace(character, '')
-
         word = word.strip()
-
         return word
 
-    def parse_id(self, url, page=0, max_items=30, sort='time', window='day'):
+    def parse_id(self, url):
+        """Pare a single url and return (imgurtype, imgurid)"""
         imgur_base_extensions = {
             'album': [r'(/a/)(\w+)'],
             'gallery': [r'(/g/)(\w+)', r'(/gallery/)(\w+)'],
-            'subreddit': [r'(/r/)(\w+)\/(\w+)', r'(/r/)(\w+)$'],
+            'subreddit': [r'(/r/)(\w+\/\w+)', r'(/r/)(\w+)$'],
             'tag': [r'(/t/)(\w+)']
         }
 
-        # TODO: Parse Album
+        # Parsing Album
+        for imgur_type in imgur_base_extensions.keys():
+            for extension in imgur_base_extensions[imgur_type]:
+                value = re.search(extension, url)
+                if value is not None:
+                    return (imgur_type, value.group(2))
 
-        # TODO: Gallery
-
-        # TODO: Subreddit
-
-        # TODO: Tag
-
-        # TODO: Else its a direct image.
+        # If still not found raise exception
+        raise UrlIdNotFound('ID structure not found')
 
     def get_image_link(self, image):
         # TODO: Get .mp4, then .gif, then 'link'. Do I need this?
@@ -98,3 +96,7 @@ class Imgur_Downloader(Imgur):
 
         # Delaying so no timeout
         sleep(.1)
+
+
+class UrlIdNotFound(Exception):
+    pass
