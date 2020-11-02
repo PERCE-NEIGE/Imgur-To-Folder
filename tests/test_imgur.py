@@ -1,6 +1,7 @@
 from imgurtofolder.configuration import Configuration
 from imgurtofolder.imgur import Imgur
-from os.path import expanduser, join, isfile
+from os import makedirs
+from os.path import exists, expanduser, join, isfile, dirname
 import json
 import pytest
 
@@ -10,6 +11,17 @@ CONFIG_PATH = join(expanduser('~'), ".config", "imgurToFolder", 'config.json')
 @pytest.fixture
 def imgur():
     """Pytest fixture to yield an Imgur object"""
+    if not exists(CONFIG_PATH):
+        makedirs(dirname(CONFIG_PATH), exist_ok=True)
+
+        with open(CONFIG_PATH, 'w') as current_file:
+            current_file.write(json.dumps(dict(
+                access_token="",
+                client_id="",
+                client_secret="",
+                download_path="",
+                refresh_token="")))
+
     with open(CONFIG_PATH, 'r') as current_file:
         data = json.loads(current_file.read())
 
