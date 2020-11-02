@@ -1,21 +1,23 @@
 # Derek Santos
-import argparse
-import configuration
-import imgur
-import imgur_downloader
-import json
-import logs
+from .configuration import Configuration
+from .imgur import Imgur
+from .imgur_downloader import Imgur_Downloader
+from .logs import Log
 from os.path import expanduser, exists, join
 from sys import platform
 from traceback import print_exc
+import argparse
+import json
 
-CONFIG_PATH = join( expanduser('~'), ".config", "imgurToFolder", 'config.json')
+CONFIG_PATH = join(expanduser('~'), ".config", "imgurToFolder", 'config.json')
 
-log = logs.Log('main')
+log = Log('main')
+
 
 def parse_arguments():
     """ Parse command line arguments """
-    parser = argparse.ArgumentParser(description='Download images off Imgur to a folder of your choice!')
+    parser = argparse.ArgumentParser(
+        description='Download images off Imgur to a folder of your choice!')
     parser.add_argument('urls', metavar='URLS', type=str,
                         nargs='*', help='Automatically detect urls')
 
@@ -37,7 +39,7 @@ def parse_arguments():
     parser.add_argument('--max-downloads', metavar='NUMBER_OF_MAX',
                         type=int,  help='Specify the max number of favorites to download')
 
-    parser.add_argument('--start-page', metavar='STARTING_PAGE', default = 0,
+    parser.add_argument('--start-page', metavar='STARTING_PAGE', default=0,
                         type=int,  help='Specify the starting page number for fravorites')
 
     parser.add_argument('--list-all-favorites', '-lf', metavar='USERNAME',
@@ -87,9 +89,10 @@ def create_config():
         except Exception as e:
             log.debug("Error when getting download_path input", exc_info=True)
 
-    return {'client_id' : client_id,
-            'client_secret' : client_secret,
-            'download_path' : download_path}
+    return {'client_id': client_id,
+            'client_secret': client_secret,
+            'download_path': download_path}
+
 
 def main():
     log.debug('Parsing logs')
@@ -102,38 +105,37 @@ def main():
         with open(CONFIG_PATH, 'r') as current_file:
             data = json.load(current_file)
 
-        config = configuration.Configuration(config_path   = CONFIG_PATH,
-                                             access_token  = data['access_token'],
-                                             client_id     = data['client_id'],
-                                             client_secret = data['client_secret'],
-                                             download_path = data['download_path'],
-                                             refresh_token = data['refresh_token'],
-                                             overwrite     = args.overwrite)
+        config = Configuration(config_path=CONFIG_PATH,
+                                             access_token=data['access_token'],
+                                             client_id=data['client_id'],
+                                             client_secret=data['client_secret'],
+                                             download_path=data['download_path'],
+                                             refresh_token=data['refresh_token'],
+                                             overwrite=args.overwrite)
 
     else:
         log.debug('No configuation found!')
         result_config = create_config()
-        config = configuration.Configuration(config_path   = CONFIG_PATH,
-                                             client_id     = result_config['client_id'],
-                                             client_secret = result_config['client_secret'],
-                                             download_path = result_config['download_path'],
-                                             overwrite     = args.overwrite)
+        config = Configuration(config_path=CONFIG_PATH,
+                                             client_id=result_config['client_id'],
+                                             client_secret=result_config['client_secret'],
+                                             download_path=result_config['download_path'],
+                                             overwrite=args.overwrite)
         config.save_configuration(True)
-
 
     log.debug('Reacting to args')
 
-
     if args.verbose:
         log.set_debug()
-        imgur.log.set_debug()
-        imgur_downloader.log.set_debug()
-        configuration.log.set_debug()
+        imgur._log.set_debug()
+        imgur_downloader._log.set_debug()
+        configuration._log.set_debug()
 
     if args.print_download_path:
         log.info('Default download path: ' + config.get_download_path())
 
-    downloader = imgur_downloader.Imgur_Downloader(config, args.max_downloads if args.max_downloads else 30)
+    downloader = imgur_downloader.Imgur_Downloader(
+        config, args.max_downloads if args.max_downloads else 30)
 
     if args.folder is not None:
         downloader.set_download_path(expanduser(args.folder))
@@ -147,7 +149,6 @@ def main():
                                   page=args.start_page,
                                   max_items=args.max_downloads if args.max_downloads else -1)
 
-
     log.debug('Parsing ids')
     for item in args.urls:
         try:
@@ -160,22 +161,19 @@ def main():
             message = 'Error with url {}. Error Message: \n\n'.format(item)
             log.exception(message)
 
-
     if args.download_favorites is not None:
-        log.debug('Downloading favorites by {}'.format("Oldest" if args.oldest else "Latest"))
+        log.debug('Downloading favorites by {}'.format(
+            "Oldest" if args.oldest else "Latest"))
         downloader.download_favorites(args.download_favorites,
                                       latest=not args.oldest,
                                       page=args.start_page,
                                       max_items=args.max_downloads if args.max_downloads else 30)
-
-
 
     if args.download_account_images is not None:
         log.debug('Downloading account images')
         downloader.download_account_images(args.download_account_images,
                                            page=args.start_page,
                                            max_items=args.max_downloads if args.max_downloads else 30)
-
 
     log.info('Done.')
 
