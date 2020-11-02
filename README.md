@@ -1,12 +1,17 @@
-![Dyrenex Software](Dyrenex_Software.png)
+![Dyrenex Software](imgurtofolder/Dyrenex_Software.png)
 
 # Imgur-To-Folder
 Download Imgur albums and images to desired folder with one command.
 
-![Gif of an example](https://giant.gfycat.com/AccurateHarmfulAmericanalligator.gif)
+---
 
-[Webm of an example](https://giant.gfycat.com/AccurateHarmfulAmericanalligator.webm)
+### Example
 
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true">
+    <source src="imgurtofolder/images/example.webm" type="video/webm">
+  </video>
+</figure>
 
 ---
 
