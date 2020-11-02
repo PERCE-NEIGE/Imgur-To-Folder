@@ -7,7 +7,7 @@ Download Imgur albums and images to desired folder with one command.
 
 ### Example
 
-![Example Gif](imgurtofolder/images/example.mp4)
+![Example Gif](imgurtofolder/images/example.gif)
 
 ---
 
