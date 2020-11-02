@@ -1,7 +1,7 @@
 from imgurtofolder.configuration import Configuration
 from imgurtofolder.imgur_downloader import Imgur_Downloader
-from os import makedirs
-from os.path import expanduser, join, exists, dirname
+from os import makedirs, listdir, remove, rmdir
+from os.path import expanduser, join, exists, dirname, isfile
 import json
 import pytest
 
@@ -71,3 +71,27 @@ def test_parse_id(imgur_downloader):
     # Get tag
     found_id = imgur_downloader.parse_id('https://imgur.com/t/someTag')
     assert found_id == ('tag', 'someTag')
+
+
+def test_download_album(imgur_downloader): 
+    # Get Album id 
+    test_album = 'https://imgur.com/a/0u4eQ'
+    test_album_type, test_album_id = imgur_downloader.parse_id(test_album)
+    assert test_album_type == 'album'
+    
+    # Test Album Download
+    imgur_downloader.download_album(test_album_id)
+    path = join(imgur_downloader._configuration.get_download_path(), 'wallpapers')
+    count = len([name for name in listdir(path) if isfile(join(path, name))])
+    assert count == 100
+
+    # Deleting created images
+    for name in listdir(path): 
+        full_file_path = join(path, name)
+        if isfile(full_file_path):
+            remove(full_file_path)
+            assert not exists(full_file_path)
+
+    # Deleting empty download directory
+    rmdir(path)
+    assert not exists(path)

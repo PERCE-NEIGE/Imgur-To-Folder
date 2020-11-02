@@ -46,16 +46,40 @@ class Imgur_Downloader(Imgur):
         raise UrlIdNotFoundError('ID structure not found')
 
     def get_image_link(self, image):
-        # TODO: Get .mp4, then .gif, then 'link'. Do I need this?
-        pass
+        if 'mp4' in image:
+            return image['mp4']
+        elif 'gifv' in image:
+            return image['gifv']
+        else:
+            return image['link']
 
     def download_tag(self, id, page=0, max_items=30):
+        """Recieves a tag id, retieves metadata about tag, then proceeds to download tag images."""
         # TODO: Tag Download
         pass
 
     def download_album(self, id):
-       # TODO: Album Download
-        pass
+        """Recieves an album id, retieves metadata about album, then proceeds to download album images."""
+
+        self._log.debug('Getting album details')
+        album = self.get_album(id)
+        title = album['title'] if album['title'] else album['id']
+        title = self.replace_characters(title)
+        path = os.path.join(self._configuration.get_download_path(), title)
+
+        self._log.debug("Checking if folder exists")
+        if not os.path.exists(path):
+            self._log.debug("Creating folder: %s" % path)
+            os.makedirs(path)
+
+        self._log.info('Downloading album: %s' % title)
+        for position, image in enumerate(album['images'], start=1):
+            image_link = self.get_image_link(image)
+            image_filename = "{} - {}{}".format(album['id'],
+                                                position,
+                                                image_link[image_link.rfind('.'):])
+
+            self.download(image_filename, image_link, path)
 
     def download_gallery(self, id):
         # TODO: Download Gallery
