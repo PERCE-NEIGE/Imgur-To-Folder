@@ -22,8 +22,8 @@ class Imgur_Downloader(Imgur):
     def replace_characters(self, word):
         # NOTE: '\\/:*?"<>|.' are invalid folder characters in a file system
         invalid_characters = ['\\', "'", '/', ':',
-                                '*', '?', '"', '<',
-                                '>', '|', '.', '\n']
+                              '*', '?', '"', '<',
+                              '>', '|', '.', '\n']
 
         for character in invalid_characters:
             word = word.replace(character, '')
@@ -80,7 +80,7 @@ class Imgur_Downloader(Imgur):
         else:
             self._log.info('Downloading image: %s' % url[url.rfind('/') + 1:])
             self.download(url[url.rfind('/') + 1:],
-                            url, self.get_download_path())
+                          url, self.get_download_path())
 
     def get_image_link(self, image):
         if 'mp4' in image:
@@ -111,7 +111,8 @@ class Imgur_Downloader(Imgur):
             if 'images' in item:
                 tag_root_title = item['title'] if item['title'] else item['id']
                 tag_root_title = self.replace_characters(tag_root_title)
-                tag_root_path = os.path.join(self.get_download_path(), tag_root_title)
+                tag_root_path = os.path.join(
+                    self.get_download_path(), tag_root_title)
                 self.mkdir(tag_root_path)
 
                 for position, sub_image in enumerate(item['images'], start=1):
@@ -224,19 +225,19 @@ class Imgur_Downloader(Imgur):
 
     def download_favorites(self, username, latest=True, page=0, max_items=None):
         self._log.info("Getting account favorites")
-        favorites = self.get_account_favorites(username= username,
-                                                sort = 'oldest' if not latest else 'newest',
-                                                page=page,
-                                                max_items=max_items)
+        favorites = self.get_account_favorites(username=username,
+                                               sort='oldest' if not latest else 'newest',
+                                               page=page,
+                                               max_items=max_items)
         self._log.debug('Number of favorites: %d' % len(favorites))
         for favorite in favorites:
             self.parse_id(favorite['link'])
 
     def list_favorites(self, username, latest=True, page=0, max_items=-1):
-        favorites = self.get_account_favorites(username= username,
-                                                sort = 'oldest' if not latest else 'newest',
-                                                page=page,
-                                                max_items=max_items)
+        favorites = self.get_account_favorites(username=username,
+                                               sort='oldest' if not latest else 'newest',
+                                               page=page,
+                                               max_items=max_items)
         self._log.info(pformat(favorites))
 
     def download_account_images(self, username, page=0, max_items=None):
@@ -269,8 +270,8 @@ class Imgur_Downloader(Imgur):
                 req.raw.decode_content = True
                 shutil.copyfileobj(req.raw, image_file)
         else:
-            self._log.info('\tERROR! Can not download: ' + \
-                            os.path.join(path, filename))
+            self._log.info('\tERROR! Can not download: ' +
+                           os.path.join(path, filename))
             self._log.info('\tStatus code: ' + str(req.status_code))
 
         # Delaying so no timeout

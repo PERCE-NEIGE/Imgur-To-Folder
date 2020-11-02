@@ -1,7 +1,6 @@
 from imgurtofolder.configuration import Configuration
 from imgurtofolder.imgur import Imgur
-from os import listdir
-from os.path import expanduser, exists, join, isfile
+from os.path import expanduser, join, isfile
 import json
 import pytest
 
