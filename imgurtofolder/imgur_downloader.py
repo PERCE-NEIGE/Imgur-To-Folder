@@ -43,31 +43,39 @@ class Imgur_Downloader(Imgur):
                     return (imgur_type, value.group(2))
 
         # If still not found raise exception
-        raise UrlIdNotFound('ID structure not found')
+        raise UrlIdNotFoundError('ID structure not found')
 
     def get_image_link(self, image):
         # TODO: Get .mp4, then .gif, then 'link'. Do I need this?
+        pass
 
     def download_tag(self, id, page=0, max_items=30):
         # TODO: Tag Download
+        pass
 
     def download_album(self, id):
        # TODO: Album Download
+        pass
 
     def download_gallery(self, id):
         # TODO: Download Gallery
+        pass
 
     def download_subreddit(self, subreddit, sort='time', window='day', page=0, max_items=30):
         # TODO: Subreddit Download
+        pass
 
     def download_subreddit_gallery(self, subreddit, id):
         # TODO: Subreddit gallery ?
+        pass
 
     def download_favorites(self, username, latest=True, page=0, max_items=None):
         # TODO: Download favorites
+        pass
 
     def download_account_images(self, username, page=0, max_items=None):
         # TODO: Download account images
+        pass
 
     def download(self, filename, url, path):
 
@@ -77,7 +85,7 @@ class Imgur_Downloader(Imgur):
             os.makedirs(path)
 
         self._log.debug('Checking to overwrite')
-        if not self.get_overwrite() and os.path.exists(os.path.join(path, filename)):
+        if not self._configuration.get_overwrite() and os.path.exists(os.path.join(path, filename)):
             self._log.info('\tSkipping %s' % filename)
             return
 
@@ -98,5 +106,5 @@ class Imgur_Downloader(Imgur):
         sleep(.1)
 
 
-class UrlIdNotFound(Exception):
+class UrlIdNotFoundError(Exception):
     pass

@@ -45,3 +45,29 @@ def test_replace_characters(imgur_downloader):
     invalid_word = "\\a'b/c:d*e?f\"g<h>i|j.k\nl"
     valid_word = imgur_downloader.replace_characters(invalid_word)
     assert valid_word == 'abcdefghijkl'
+
+
+def test_parse_id(imgur_downloader):
+    # Get album id
+    found_id = imgur_downloader.parse_id('https://imgur.com/a/aAlbumTag')
+    assert found_id == ('album', 'aAlbumTag')
+
+    # Get Gallery id
+    found_id = imgur_downloader.parse_id('https://imgur.com/g/aGalleryTag')
+    assert found_id == ('gallery', 'aGalleryTag')
+
+    # Get Gallery id
+    found_id = imgur_downloader.parse_id('https://imgur.com/gallery/1QJQv4B')
+    assert found_id == ('gallery', '1QJQv4B')
+
+    # Get Subreddit id
+    found_id = imgur_downloader.parse_id('https://imgur.com/r/funny')
+    assert found_id == ('subreddit', 'funny')
+
+    # Get Subreddit id photo
+    found_id = imgur_downloader.parse_id('https://imgur.com/r/funny/TZI385c')
+    assert found_id == ('subreddit', 'funny/TZI385c')
+
+    # Get tag
+    found_id = imgur_downloader.parse_id('https://imgur.com/t/someTag')
+    assert found_id == ('tag', 'someTag')
