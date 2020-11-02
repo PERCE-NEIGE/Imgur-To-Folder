@@ -82,7 +82,7 @@ class Imgur:
 
         self._configuration.set_access_token(response_json['access_token'])
 
-    def get_account_images(self, username, page=0):
+    def get_account_images(self, username, starting_page=0):
         url = f'https://api.imgur.com/3/account/{username}/images'
         headers = {
             'Authorization': 'Bearer {}'.format(self._configuration.get_access_token())
@@ -91,55 +91,129 @@ class Imgur:
         response = requests.request(
             "GET",
             url,
-            headers=headers)
+            headers=headers).json()
 
-        return response.json()
+        if response['success'] is False:
+            raise ImgurResponseNotSuccess("Imgur Returned 'success': False")
 
-    def get_gallery_favorites(self, username, sort='newest'):
-        pass
+        return response['data']
 
-    def get_account_favorites(self, username, sort='newest', page=0, max_items=-1):
-        pass
+    def get_gallery_favorites(self, username, sort='newest', starting_page=0):
+        url = f'https://api.imgur.com/3/account/{username}/gallery_favorites/{starting_page}/{sort}'
+        headers = {
+            'Authorization': 'Bearer {}'.format(self._configuration.get_access_token())
+        }
+
+        response = requests.request(
+            "GET",
+            url,
+            headers=headers).json()
+
+        if response['success'] is False:
+            raise ImgurResponseNotSuccess("Imgur Returned 'success': False")
+
+        return response['data']
+
+    def get_account_favorites(self, username, sort='newest', starting_page=0, max_items=80):
+        total_images = []
+        while len(total_images) < max_items:
+            url = f"https://api.imgur.com/3/account/{username}/favorites/{starting_page}/{sort}"
+            headers = {
+                'Authorization': 'Bearer {}'.format(self._configuration.get_access_token())
+            }
+            response = requests.request(
+                "GET",
+                url,
+                headers=headers).json()
+
+            if response['success'] is False:
+                break
+
+            for image in response['data']:
+                if 'data' in response and len(total_images) < max_items:
+                    total_images.append(image)
+
+        return total_images
 
     def get_account_submissions(self, username):
         url = f'https://api.imgur.com/3/account/{username}/submissions/'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
         }
-        response = requests.request('GET', url, headers=headers)
-        return response.json()
+        response = requests.request('GET', url, headers=headers).json()
+
+        if response['success'] is False:
+            raise ImgurResponseNotSuccess("Imgur Returned 'success': False")
+
+        return response['data']
 
     def get_album(self, album_hash):
         url = f'https://api.imgur.com/3/album/{album_hash}'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
         }
-        response = requests.request('GET', url, headers=headers)
-        return response.json()
+        response = requests.request('GET', url, headers=headers).json()
+
+        if response['success'] is False:
+            raise ImgurResponseNotSuccess("Imgur Returned 'success': False")
+
+        return response['data']
 
     def get_gallery_album(self, gallery_hash):
         url = f'https://api.imgur.com/3/gallery/{gallery_hash}'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
         }
-        response = requests.request('GET', url, headers=headers)
-        return response.json()
+        response = requests.request('GET', url, headers=headers).json()
 
-    def get_subreddit_gallery(self, subreddit, sort='time', window='day', page=0):
-        url = f'https://api.imgur.com/3/gallery/r/{subreddit}/{sort}/{window}/{page}'
+        if response['success'] is False:
+            raise ImgurResponseNotSuccess("Imgur Returned 'success': False")
+
+        return response['data']
+
+    def get_subreddit_gallery(self, subreddit, sort='time', window='day', starting_page=0):
+        url = f'https://api.imgur.com/3/gallery/r/{subreddit}/{sort}/{window}/{starting_page}'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
         }
-        response = requests.request('GET', url, headers=headers)
-        return response.json()
+        response = requests.request('GET', url, headers=headers).json()
+
+        if response['success'] is False:
+            raise ImgurResponseNotSuccess("Imgur Returned 'success': False")
+
+        return response['data']
 
     def get_subreddit_image(self, subreddit, image_id):
         url = f'https://api.imgur.com/3/gallery/r/{subreddit}/{image_id}'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
         }
-        response = requests.request('GET', url, headers=headers)
-        return response.json()
+        response = requests.request('GET', url, headers=headers).json()
 
-    def get_tag(self, tag, sort='top', window='week', page=0, max_items=30):
-        pass
+        if response['success'] is False:
+            raise ImgurResponseNotSuccess("Imgur Returned 'success': False")
+
+        return response['data']
+
+    def get_tag(self, tag, sort='top', window='week', starting_page=0, max_items=30):
+        total_images = []
+
+        while len(total_images) < max_items:
+            url = f'https://api.imgur.com/3/gallery/t/{tag}/{sort}/{window}/{starting_page}'
+            headers = {
+                'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
+            }
+            response = requests.request('GET', url, headers=headers).json()
+
+            if response['success'] is False:
+                break
+
+            for image in response['data']:
+                if 'data' in response and len(total_images) < max_items:
+                    total_images.append(image)
+
+        return total_images
+
+
+class ImgurResponseNotSuccess(Exception):
+    pass

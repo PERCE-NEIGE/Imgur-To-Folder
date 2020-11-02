@@ -108,16 +108,69 @@ def test_authorize(imgur):
 
 def test_get_account_images(imgur):
     """Test retrival of account images."""
-    imgur.set_download_path(join(expanduser('~'),
-                                 "Downloads",
-                                 "testFolderItf"))
-    account_images = imgur.get_account_images("me", page=0)
-    assert len(account_images) > 1 
-    
-def test_get_gallery_favorites(imgur): 
-    pass
-    # all_files = []
-    # for the_file in listdir(imgur.get_download_path()):
-    #     all_files.append(the_file)
+    account_images = imgur.get_account_images("me", starting_page=0)
+    assert len(account_images) > 1
 
-    # assert len(all_files) == 10 
+
+def test_get_gallery_favorites(imgur):
+    account_gallery_favorites = imgur.get_gallery_favorites("me",
+                                                            sort="newest")
+    assert len(account_gallery_favorites) > 1
+
+    account_gallery_favorites = imgur.get_gallery_favorites("me",
+                                                            sort="oldest")
+    assert len(account_gallery_favorites) > 1
+
+
+def test_get_account_favorites(imgur):
+    account_gallery_favorites = imgur.get_account_favorites("me",
+                                                            sort="newest")
+    assert len(account_gallery_favorites) > 1
+
+    account_gallery_favorites = imgur.get_account_favorites("me",
+                                                            sort="oldest")
+    assert len(account_gallery_favorites) > 1
+
+
+def test_get_tag(imgur):
+    
+
+    total_images = imgur.get_tag('programming',
+                                 sort='top',
+                                 window='all',
+                                 starting_page=0,
+                                 max_items=10)
+
+    assert len(total_images) == 10
+
+    total_images = imgur.get_tag('programming',
+                                 sort='time',
+                                 window='day',
+                                 starting_page=0,
+                                 max_items=11)
+
+    assert len(total_images) == 11
+
+    total_images = imgur.get_tag('programming',
+                                 sort='time',
+                                 window='week',
+                                 starting_page=0,
+                                 max_items=12)
+
+    assert len(total_images) == 12
+
+    total_images = imgur.get_tag('programming',
+                                 sort='time',
+                                 window='month',
+                                 starting_page=0,
+                                 max_items=13)
+
+    assert len(total_images) == 13
+
+    total_images = imgur.get_tag('programming',
+                                 sort='time',
+                                 window='year',
+                                 starting_page=0,
+                                 max_items=15)
+
+    assert len(total_images) == 15
