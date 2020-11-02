@@ -1,6 +1,7 @@
 from imgurtofolder.configuration import Configuration
 from imgurtofolder.imgur import Imgur
-from os.path import expanduser, exists, join
+from os import listdir
+from os.path import expanduser, exists, join, isfile
 import json
 import pytest
 
@@ -73,7 +74,7 @@ def test_set_default_folder_path(imgur):
 
 def test_get_download_path(imgur):
     """Testing if get_download_path gets the correct configuration download path from an Imgur Object"""
-    
+
     download_path = imgur.get_download_path()
 
     with open(CONFIG_PATH, 'r') as current_file:
@@ -82,10 +83,41 @@ def test_get_download_path(imgur):
 
 
 def test_get_overwrite(imgur):
-    """Testing if overwrite field is returned from config file""" 
+    """Testing if overwrite field is returned from config file"""
 
     overwrite = imgur.get_overwrite()
 
     with open(CONFIG_PATH, 'r') as current_file:
         data = json.loads(current_file.read())
         assert overwrite == data['overwrite']
+
+
+@pytest.mark.skip("Skipping to not pause tests... Should work.")
+def test_authorize(imgur):
+
+    imgur.authorize()
+
+    assert imgur._configuration.get_access_token()
+    assert imgur._configuration.get_refresh_token()
+
+    with open(CONFIG_PATH, 'r') as current_file:
+        data = json.loads(current_file.read())
+        assert data['access_token']
+        assert data['refresh_token']
+
+
+def test_get_account_images(imgur):
+    """Test retrival of account images."""
+    imgur.set_download_path(join(expanduser('~'),
+                                 "Downloads",
+                                 "testFolderItf"))
+    account_images = imgur.get_account_images("me", page=0)
+    assert len(account_images) > 1 
+    
+def test_get_gallery_favorites(imgur): 
+    pass
+    # all_files = []
+    # for the_file in listdir(imgur.get_download_path()):
+    #     all_files.append(the_file)
+
+    # assert len(all_files) == 10 

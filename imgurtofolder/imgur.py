@@ -83,7 +83,17 @@ class Imgur:
         self._configuration.set_access_token(response_json['access_token'])
 
     def get_account_images(self, username, page=0):
-        pass
+        url = f'https://api.imgur.com/3/account/{username}/images'
+        headers = {
+            'Authorization': 'Bearer {}'.format(self._configuration.get_access_token())
+        }
+
+        response = requests.request(
+            "GET",
+            url,
+            headers=headers)
+
+        return response.json()
 
     def get_gallery_favorites(self, username, sort='newest'):
         pass
@@ -132,4 +142,4 @@ class Imgur:
         return response.json()
 
     def get_tag(self, tag, sort='top', window='week', page=0, max_items=30):
-        pass 
+        pass
