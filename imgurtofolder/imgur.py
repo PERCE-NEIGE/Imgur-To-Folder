@@ -214,6 +214,13 @@ class Imgur:
 
         return total_images
 
+class Image():
+    def __init__(self, dictionary):
+        self.__dict__.update(dictionary)
+
+class Album():
+    def __init__(self, dictionary):
+        self.__dict__.update(dictionary)
 
 class ImgurResponseNotSuccess(Exception):
     pass
