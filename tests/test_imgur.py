@@ -40,69 +40,6 @@ def imgur():
     yield imgur
 
 
-def test_set_download_path(imgur):
-    """Testing if set_download_path sets the download path to an Imgur Object"""
-    old_path = join(expanduser('~'), "Downloads")
-    new_path = join(expanduser('~'), "Downloads", "testFolderItf")
-
-    imgur.set_download_path(new_path)
-    assert imgur.get_download_path() == join(expanduser('~'),
-                                             "Downloads",
-                                             "testFolderItf")
-    assert imgur._configuration.get_download_path() == join(expanduser('~'),
-                                                            "Downloads",
-                                                            "testFolderItf")
-
-    imgur.set_download_path(old_path)
-    assert imgur.get_download_path() == old_path
-    assert imgur._configuration.get_download_path() == old_path
-
-
-def test_set_default_folder_path(imgur):
-    """Testing if set_default_download_path sets the download path to an Imgur Object and config file"""
-    old_path = join(expanduser('~'), "Downloads")
-    new_path = join(expanduser('~'), "Downloads", "testFolderItf")
-
-    imgur.set_default_folder_path(new_path)
-    assert imgur.get_download_path() == join(expanduser('~'),
-                                             "Downloads",
-                                             "testFolderItf")
-    assert imgur._configuration.get_download_path() == join(expanduser('~'),
-                                                            "Downloads",
-                                                            "testFolderItf")
-    with open(CONFIG_PATH, 'r') as current_file:
-        data = json.loads(current_file.read())
-        assert data['download_path'] == imgur.get_download_path()
-
-    imgur.set_default_folder_path(old_path)
-    assert imgur.get_download_path() == old_path
-    assert imgur._configuration.get_download_path() == old_path
-
-    with open(CONFIG_PATH, 'r') as current_file:
-        data = json.loads(current_file.read())
-        assert data['download_path'] == old_path
-
-
-def test_get_download_path(imgur):
-    """Testing if get_download_path gets the correct configuration download path from an Imgur Object"""
-
-    download_path = imgur.get_download_path()
-
-    with open(CONFIG_PATH, 'r') as current_file:
-        data = json.loads(current_file.read())
-        assert download_path == data['download_path']
-
-
-def test_get_overwrite(imgur):
-    """Testing if overwrite field is returned from config file"""
-
-    overwrite = imgur.get_overwrite()
-
-    with open(CONFIG_PATH, 'r') as current_file:
-        data = json.loads(current_file.read())
-        assert overwrite == data['overwrite']
-
-
 @pytest.mark.skip("Skipping to not pause tests... Should work.")
 def test_authorize(imgur):
 
@@ -144,7 +81,6 @@ def test_get_account_favorites(imgur):
 
 
 def test_get_tag(imgur):
-    
 
     total_images = imgur.get_tag('programming',
                                  sort='top',

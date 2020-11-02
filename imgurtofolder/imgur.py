@@ -16,28 +16,12 @@ class Imgur:
         self._configuration = configuration
 
     def set_configuration(self, configuration):
+        """Replace existing configuration with passed Configuration class."""
         self._log.debug('Changed configuration')
         self._configuration = configuration
 
-    def set_download_path(self, path):
-        self._log.debug('Changing download path')
-        if not os.path.exists(path):
-            os.makedirs(path)
-        self._configuration.set_download_path(path)
-
-    def set_default_folder_path(self, path):
-        self._log.debug('Changing download path')
-        if not os.path.exists(path):
-            os.makedirs(path)
-        self._configuration.set_default_download_path(path)
-
-    def get_download_path(self):
-        return self._configuration.get_download_path()
-
-    def get_overwrite(self):
-        return self._configuration.get_overwrite()
-
     def authorize(self):
+        """Prompt user to authenticate their application with Imgur"""
         url = "https://api.imgur.com/oauth2/authorize?response_type=token&client_id={client_id}".format(
             client_id=self._configuration.get_client_id()
         )
@@ -65,6 +49,7 @@ class Imgur:
         self._log.info('The application is now authorized')
 
     def generate_access_token(self):
+        """Generates a new access token to be used throughout the application"""
         url = 'https://api.imgur.com/oauth2/token'
         data = {'refresh_token': self._configuration.get_refresh_token(),
                 'client_id': self._configuration.get_client_id(),
@@ -82,7 +67,8 @@ class Imgur:
 
         self._configuration.set_access_token(response_json['access_token'])
 
-    def get_account_images(self, username, starting_page=0):
+    def get_account_images(self, username, page=0):
+        """Returns a list of images found on the user's account"""
         url = f'https://api.imgur.com/3/account/{username}/images'
         headers = {
             'Authorization': 'Bearer {}'.format(self._configuration.get_access_token())
@@ -98,8 +84,9 @@ class Imgur:
 
         return response['data']
 
-    def get_gallery_favorites(self, username, sort='newest', starting_page=0):
-        url = f'https://api.imgur.com/3/account/{username}/gallery_favorites/{starting_page}/{sort}'
+    def get_gallery_favorites(self, username, sort='newest', page=0):
+        """Return a list of images the user has favorited"""
+        url = f'https://api.imgur.com/3/account/{username}/gallery_favorites/{page}/{sort}'
         headers = {
             'Authorization': 'Bearer {}'.format(self._configuration.get_access_token())
         }
@@ -114,10 +101,11 @@ class Imgur:
 
         return response['data']
 
-    def get_account_favorites(self, username, sort='newest', starting_page=0, max_items=80):
+    def get_account_favorites(self, username, sort='newest', page=0, max_items=80):
+        """Returns a list of account favorites up to the max_items"""
         total_images = []
         while len(total_images) < max_items:
-            url = f"https://api.imgur.com/3/account/{username}/favorites/{starting_page}/{sort}"
+            url = f"https://api.imgur.com/3/account/{username}/favorites/{page}/{sort}"
             headers = {
                 'Authorization': 'Bearer {}'.format(self._configuration.get_access_token())
             }
@@ -136,6 +124,7 @@ class Imgur:
         return total_images
 
     def get_account_submissions(self, username):
+        """Returns a list of account submissions by username"""
         url = f'https://api.imgur.com/3/account/{username}/submissions/'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
@@ -148,6 +137,7 @@ class Imgur:
         return response['data']
 
     def get_album(self, album_hash):
+        """Returns the albumn metadata"""
         url = f'https://api.imgur.com/3/album/{album_hash}'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
@@ -160,6 +150,7 @@ class Imgur:
         return response['data']
 
     def get_gallery_album(self, gallery_hash):
+        """Returns a gallery metadata"""
         url = f'https://api.imgur.com/3/gallery/{gallery_hash}'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
@@ -171,8 +162,9 @@ class Imgur:
 
         return response['data']
 
-    def get_subreddit_gallery(self, subreddit, sort='time', window='day', starting_page=0):
-        url = f'https://api.imgur.com/3/gallery/r/{subreddit}/{sort}/{window}/{starting_page}'
+    def get_subreddit_gallery(self, subreddit, sort='time', window='day', page=0):
+        """Returns a subreddit gallery metadata"""
+        url = f'https://api.imgur.com/3/gallery/r/{subreddit}/{sort}/{window}/{page}'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
         }
@@ -184,6 +176,7 @@ class Imgur:
         return response['data']
 
     def get_subreddit_image(self, subreddit, image_id):
+        """Returns a subreddit image metadata"""
         url = f'https://api.imgur.com/3/gallery/r/{subreddit}/{image_id}'
         headers = {
             'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
@@ -195,11 +188,12 @@ class Imgur:
 
         return response['data']
 
-    def get_tag(self, tag, sort='top', window='week', starting_page=0, max_items=30):
+    def get_tag(self, tag, sort='top', window='week', page=0, max_items=30):
+        """Returns all images up to the max_items from a tag"""
         total_images = []
 
         while len(total_images) < max_items:
-            url = f'https://api.imgur.com/3/gallery/t/{tag}/{sort}/{window}/{starting_page}'
+            url = f'https://api.imgur.com/3/gallery/t/{tag}/{sort}/{window}/{page}'
             headers = {
                 'Authorization': 'Client-ID %s' % self._configuration.get_client_id()
             }
@@ -214,13 +208,16 @@ class Imgur:
 
         return total_images
 
+
 class Image():
     def __init__(self, dictionary):
         self.__dict__.update(dictionary)
 
+
 class Album():
     def __init__(self, dictionary):
         self.__dict__.update(dictionary)
+
 
 class ImgurResponseNotSuccess(Exception):
     pass
